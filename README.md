@@ -1,8 +1,8 @@
 # [Nombre del proyecto]
 
 **Alumno:** Quijije Chele Mike
-**Curso:** Logica de Programacion
-**Fecha de inicio:** 17/07/2026 
+**Curso:** LOGICA DE PROGRAMACION
+**Fecha de inicio:** 14/07/2026 
 
 ## 1. Objetivo del proyecto
 
