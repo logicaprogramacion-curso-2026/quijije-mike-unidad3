@@ -1,6 +1,6 @@
 # [Nombre del proyecto]
 
-**Alumno:** Quijije Chele, Mike
+**Alumno:** Quijije Chele Mike
 **Curso:** Logica de Programacion
 **Fecha de inicio:** 17/07/2026 
 
