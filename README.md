@@ -1,8 +1,8 @@
 # [Nombre del proyecto]
 
-**Alumno:** [Apellido, Nombre]
-**Curso:** [Nombre del curso]
-**Fecha de inicio:** [dd/mm/aaaa]
+**Alumno:** [Quijije Chele, Mike]
+**Curso:** [Logica de Programacion]
+**Fecha de inicio:** [17/07/2026]
 
 ## 1. Objetivo del proyecto
 
