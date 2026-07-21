@@ -1,0 +1,1 @@
+print("hola logica de programcion")
