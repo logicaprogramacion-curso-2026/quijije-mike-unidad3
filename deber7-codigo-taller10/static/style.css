@@ -1,0 +1,433 @@
+/* ============================================
+   Evaluación de Temas Docentes — estilo "libreta"
+   Paleta: pizarra verde + papel marfil + tinta
+   ============================================ */
+
+:root {
+    --ink-900: #1f2a24;
+    --ink-700: #3a4a41;
+    --slate-bg: #16302a;
+    --slate-bg-dark: #102420;
+    --paper: #f6f1e4;
+    --paper-line: #e3dac4;
+    --brass: #c79a3d;
+    --brass-dark: #a87f2d;
+
+    --nivel1: #a8433f;
+    --nivel1-bg: #f6e6e4;
+    --nivel2: #b8862a;
+    --nivel2-bg: #f7ecd8;
+    --nivel3: #2f6b4f;
+    --nivel3-bg: #e3ede6;
+
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'IBM Plex Sans', -apple-system, sans-serif;
+    --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+
+    --radius: 6px;
+    --shadow-card: 0 18px 40px -18px rgba(16, 36, 32, 0.55);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--font-body);
+    color: var(--ink-900);
+    background:
+        radial-gradient(circle at 15% 10%, rgba(255,255,255,0.05), transparent 45%),
+        linear-gradient(180deg, var(--slate-bg) 0%, var(--slate-bg-dark) 100%);
+    background-attachment: fixed;
+    padding: 48px 20px 64px;
+}
+
+.container {
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+/* ---------- Header ---------- */
+
+header {
+    text-align: center;
+    margin-bottom: 36px;
+    color: var(--paper);
+}
+
+.eyebrow {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--brass);
+    border: 1px solid rgba(199, 154, 61, 0.45);
+    border-radius: 999px;
+    padding: 5px 14px;
+    margin-bottom: 18px;
+}
+
+header h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(2rem, 5vw, 2.75rem);
+    margin: 0 0 10px;
+    letter-spacing: -0.01em;
+}
+
+.subtitle {
+    font-size: 15px;
+    color: rgba(246, 241, 228, 0.7);
+    margin: 0;
+}
+
+/* ---------- Card: input ---------- */
+
+.card {
+    background: var(--paper);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    padding: 32px;
+    position: relative;
+    border: 1px solid var(--paper-line);
+}
+
+.card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 32px;
+    right: 32px;
+    height: 3px;
+    background: repeating-linear-gradient(
+        90deg,
+        var(--brass) 0px,
+        var(--brass) 8px,
+        transparent 8px,
+        transparent 16px
+    );
+    opacity: 0.6;
+}
+
+.input-section label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-700);
+    margin-bottom: 10px;
+}
+
+#temaInput {
+    width: 100%;
+    font-family: var(--font-mono);
+    font-size: 16px;
+    padding: 14px 16px;
+    border: 1.5px solid var(--paper-line);
+    border-radius: var(--radius);
+    background: #fffdf8;
+    color: var(--ink-900);
+    margin-bottom: 16px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+#temaInput::placeholder {
+    color: #a89f8a;
+}
+
+#temaInput:focus {
+    outline: none;
+    border-color: var(--brass);
+    box-shadow: 0 0 0 3px rgba(199, 154, 61, 0.25);
+}
+
+.btn-evaluar {
+    width: 100%;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.01em;
+    padding: 14px 20px;
+    border: none;
+    border-radius: var(--radius);
+    background: var(--ink-900);
+    color: var(--paper);
+    cursor: pointer;
+    transition: transform 0.12s ease, background 0.15s ease;
+}
+
+.btn-evaluar:hover {
+    background: var(--slate-bg);
+}
+
+.btn-evaluar:active {
+    transform: translateY(1px);
+}
+
+.btn-evaluar:focus-visible {
+    outline: 2px solid var(--brass);
+    outline-offset: 3px;
+}
+
+/* ---------- Resultado ---------- */
+
+.resultado-container {
+    margin-top: 20px;
+    min-height: 60px;
+}
+
+.placeholder {
+    text-align: center;
+    padding: 28px 20px;
+    color: rgba(246, 241, 228, 0.75);
+}
+
+.placeholder p {
+    margin: 0 0 8px;
+    font-size: 15px;
+}
+
+.placeholder .hint {
+    font-size: 13px;
+    color: rgba(246, 241, 228, 0.5);
+}
+
+/* Estilos genéricos para contenido que inserte script.js dentro de #resultado */
+
+.resultado-container:not(:has(.placeholder)) {
+    background: var(--paper);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    padding: 28px 32px;
+    border: 1px solid var(--paper-line);
+    animation: sello-in 0.35s ease;
+}
+
+@keyframes sello-in {
+    from {
+        opacity: 0;
+        transform: scale(0.97) translateY(6px) rotate(-0.5deg);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0) rotate(0deg);
+    }
+}
+
+.resultado-container h2,
+.resultado-container h3 {
+    font-family: var(--font-display);
+    color: var(--ink-900);
+    margin-top: 0;
+}
+
+.resultado-container p {
+    line-height: 1.6;
+    color: var(--ink-700);
+}
+
+.resultado-container strong {
+    font-family: var(--font-mono);
+    color: var(--ink-900);
+}
+
+.resultado-container ul {
+    padding-left: 20px;
+    line-height: 1.7;
+}
+
+/* ---------- Clases generadas por script.js ---------- */
+
+.loading {
+    text-align: center;
+    padding: 36px 20px;
+    color: rgba(246, 241, 228, 0.85);
+}
+
+.spinner {
+    width: 34px;
+    height: 34px;
+    margin: 0 auto;
+    border: 3px solid rgba(199, 154, 61, 0.25);
+    border-top-color: var(--brass);
+    border-radius: 50%;
+    animation: girar 0.8s linear infinite;
+}
+
+@keyframes girar {
+    to { transform: rotate(360deg); }
+}
+
+.resultado-card {
+    background: var(--paper);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    padding: 28px 32px;
+    border: 1px solid var(--paper-line);
+    border-left: 4px solid var(--brass);
+    animation: sello-in 0.35s ease;
+}
+
+.resultado-card.nivel-1 { border-left-color: var(--nivel1); }
+.resultado-card.nivel-2 { border-left-color: var(--nivel2); }
+.resultado-card.nivel-3 { border-left-color: var(--nivel3); }
+
+.resultado-card h2 {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    color: var(--ink-900);
+    margin-top: 0;
+}
+
+.nivel-badge {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 6px 14px;
+    border-radius: 999px;
+    display: inline-block;
+}
+
+.nivel-badge.n1 { background: var(--nivel1-bg); color: var(--nivel1); }
+.nivel-badge.n2 { background: var(--nivel2-bg); color: var(--nivel2); }
+.nivel-badge.n3 { background: var(--nivel3-bg); color: var(--nivel3); }
+
+.detalle {
+    padding: 14px 0;
+    border-top: 1px solid var(--paper-line);
+}
+
+.detalle h4 {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-900);
+    margin: 0 0 6px;
+}
+
+.detalle p {
+    margin: 0;
+    color: var(--ink-700);
+    line-height: 1.6;
+}
+
+.resumen {
+    margin-top: 14px;
+    padding: 16px 18px;
+    background: rgba(199, 154, 61, 0.1);
+    border-radius: var(--radius);
+}
+
+.resumen h4 {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--brass-dark);
+    margin: 0 0 6px;
+}
+
+.resumen p {
+    margin: 0;
+    color: var(--ink-900);
+}
+
+/* ---------- Info section ---------- */
+
+.info-section {
+    margin-top: 40px;
+}
+
+.info-section h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--paper);
+    text-align: center;
+    font-size: 1.25rem;
+    margin-bottom: 20px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.info-item {
+    background: var(--paper);
+    border-radius: var(--radius);
+    padding: 18px;
+    border-top: 4px solid transparent;
+}
+
+.info-item h4 {
+    font-family: var(--font-body);
+    font-size: 15px;
+    margin: 4px 0 8px;
+    color: var(--ink-900);
+}
+
+.info-item p {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--ink-700);
+    margin: 0;
+}
+
+.nivel-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 999px;
+}
+
+.nivel-1 { border-top-color: var(--nivel1); }
+.nivel-1 .nivel-tag { background: var(--nivel1-bg); color: var(--nivel1); }
+
+.nivel-2 { border-top-color: var(--nivel2); }
+.nivel-2 .nivel-tag { background: var(--nivel2-bg); color: var(--nivel2); }
+
+.nivel-3 { border-top-color: var(--nivel3); }
+.nivel-3 .nivel-tag { background: var(--nivel3-bg); color: var(--nivel3); }
+
+/* ---------- Footer ---------- */
+
+footer {
+    text-align: center;
+    margin-top: 40px;
+}
+
+footer p {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: rgba(246, 241, 228, 0.45);
+    letter-spacing: 0.04em;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 640px) {
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    .card {
+        padding: 24px 20px;
+    }
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+}
