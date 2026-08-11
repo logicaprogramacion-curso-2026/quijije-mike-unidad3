@@ -1,8 +1,11 @@
 import json
+import threading
 from dataclasses import dataclass, asdict
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import List
 
+
+# ---------- Preguntas ----------
 
 @dataclass
 class Pregunta:
@@ -14,24 +17,74 @@ class Pregunta:
     solucion: str
 
 
-# Aquí se parametriza el arreglo de preguntas.
+# Preguntas de sintaxis de Python (usa &blank como marcador del hueco).
 PREGUNTAS: List[Pregunta] = [
     Pregunta(
-        pregunta="for i &blank 0; i &lt; 10; i++",
-        opcion_a="=",
-        opcion_b="<",
-        opcion_c=":=",
-        solucion="C",
+        pregunta="for i &blank range(10):",
+        opcion_a="in",
+        opcion_b="on",
+        opcion_c="of",
+        solucion="A",
     ),
     Pregunta(
-        pregunta='var nombre &blank "Sofia"',
-        opcion_a="=",
-        opcion_b="<",
+        pregunta="if x &blank 5:",
+        opcion_a="==",
+        opcion_b="=",
         opcion_c=":=",
+        solucion="A",
+    ),
+    Pregunta(
+        pregunta="def suma(a, b)&blank\n    return a + b",
+        opcion_a=":",
+        opcion_b=";",
+        opcion_c="->",
         solucion="A",
     ),
 ]
 
+
+# ---------- Resultados (ranking en memoria) ----------
+
+@dataclass
+class Resultado:
+    nombre: str
+    tiempo_ms: int
+    tiempo_texto: str
+
+
+def formatear_tiempo(ms: int) -> str:
+    total_seg = ms // 1000
+    minutos = total_seg // 60
+    segundos = total_seg % 60
+    return f"{minutos:02d}:{segundos:02d}"
+
+
+class RankingStore:
+    """Guarda los resultados en memoria y los mantiene ordenados por tiempo ascendente."""
+
+    def __init__(self):
+        self._lock = threading.Lock()
+        self._resultados: List[Resultado] = []
+
+    def agregar(self, nombre: str, tiempo_ms: int) -> None:
+        nuevo = Resultado(
+            nombre=nombre,
+            tiempo_ms=tiempo_ms,
+            tiempo_texto=formatear_tiempo(tiempo_ms),
+        )
+        with self._lock:
+            self._resultados.append(nuevo)
+            self._resultados.sort(key=lambda r: r.tiempo_ms)
+
+    def obtener_ordenados(self) -> List[Resultado]:
+        with self._lock:
+            return list(self._resultados)
+
+
+ranking_store = RankingStore()
+
+
+# ---------- Página ----------
 
 class Pagina:
     """Encapsula la plantilla HTML e inyecta el arreglo de preguntas como JSON."""
@@ -105,17 +158,20 @@ class Pagina:
   .code {
     width: 100%;
     box-sizing: border-box;
-    height: 160px;
+    min-height: 160px;
     font-family: 'Courier New', monospace;
-    font-size: 24px;
+    font-size: 22px;
     background: #1e1e1e;
     color: #d4d4d4;
     border-radius: 8px;
     margin-bottom: 20px;
+    padding: 16px;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
+    white-space: pre;
+    box-sizing: border-box;
   }
   .blank {
     font-weight: bold;
@@ -150,7 +206,7 @@ class Pagina:
     justify-content: center;
     align-items: center;
     font-family: 'Courier New', monospace;
-    font-size: 42px;
+    font-size: 32px;
     padding: 0;
     border: none;
     border-radius: 8px;
@@ -168,25 +224,46 @@ class Pagina:
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 14px;
+    gap: 10px;
   }
   #pantalla-final h2 {
     margin: 0;
     color: #333;
   }
-  #listaFinal {
+  #tiempoFinal {
+    font-size: 20px;
+    color: #007acc;
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+  #tituloRanking {
+    margin: 10px 0 0 0;
+    color: #333;
+  }
+  #ranking {
     width: 100%;
     box-sizing: border-box;
     text-align: left;
     background: #f7f7f7;
     border-radius: 8px;
-    padding: 16px 16px 16px 36px;
+    padding: 12px 20px;
     margin: 0;
+    list-style: none;
   }
-  #listaFinal li {
-    font-family: 'Courier New', monospace;
-    margin-bottom: 8px;
+  #ranking li {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 16px;
     color: #333;
+  }
+  #ranking li:last-child {
+    border-bottom: none;
+  }
+  #ranking li.mejor {
+    font-weight: bold;
+    color: #4caf50;
   }
 </style>
 </head>
@@ -214,7 +291,9 @@ class Pagina:
     <!-- Pantalla 3: final -->
     <div id="pantalla-final">
       <h2 id="tituloFinal"></h2>
-      <ul id="listaFinal"></ul>
+      <div id="tiempoFinal"></div>
+      <h3 id="tituloRanking">Ranking (menor tiempo primero)</h3>
+      <ol id="ranking"></ol>
     </div>
 
   </div>
@@ -223,6 +302,7 @@ class Pagina:
     const preguntas = __PREGUNTAS_JSON__;
     let nombre = '';
     let indice = 0;
+    let inicioTimestamp = 0;
     const respondidas = [];
 
     function iniciar() {
@@ -232,6 +312,7 @@ class Pagina:
         return;
       }
       nombre = valor;
+      inicioTimestamp = Date.now();
       document.getElementById('pantalla-inicio').style.display = 'none';
       document.getElementById('pantalla-pregunta').style.display = 'flex';
       cargarPregunta(indice);
@@ -240,12 +321,11 @@ class Pagina:
     function cargarPregunta(i) {
       const p = preguntas[i];
 
-      const html = p.pregunta.replace(
-        '&blank',
-        '<span id="blank" class="blank">___</span>'
-      );
+      const html = p.pregunta
+        .replace('&blank', '<span id="blank" class="blank">___</span>')
+        .replace(/\\n/g, '<br>');
       document.getElementById('code').innerHTML = html;
-      document.getElementById('variable').textContent = 'Elige un operador';
+      document.getElementById('variable').textContent = 'Elige una opción';
 
       const btnA = document.getElementById('btnA');
       const btnB = document.getElementById('btnB');
@@ -270,9 +350,7 @@ class Pagina:
         blank.classList.add('correcto');
         document.getElementById('variable').textContent = '¡Correcto!';
 
-        const textoCompleto = p.pregunta
-          .replace('&blank', valor)
-          .replace(/&lt;/g, '<');
+        const textoCompleto = p.pregunta.replace('&blank', valor);
         respondidas.push(textoCompleto);
 
         setTimeout(() => {
@@ -280,7 +358,7 @@ class Pagina:
           if (indice < preguntas.length) {
             cargarPregunta(indice);
           } else {
-            mostrarFinal();
+            finalizar();
           }
         }, 700);
       } else {
@@ -290,19 +368,49 @@ class Pagina:
       }
     }
 
-    function mostrarFinal() {
+    function formatearTiempo(ms) {
+      const totalSeg = Math.floor(ms / 1000);
+      const min = Math.floor(totalSeg / 60);
+      const seg = totalSeg % 60;
+      const pad = n => String(n).padStart(2, '0');
+      return pad(min) + ':' + pad(seg);
+    }
+
+    async function finalizar() {
       document.getElementById('pantalla-pregunta').style.display = 'none';
       document.getElementById('pantalla-final').style.display = 'flex';
+
+      const tiempoMs = Date.now() - inicioTimestamp;
+
       document.getElementById('tituloFinal').textContent =
         '¡Felicidades, ' + nombre + '!';
+      document.getElementById('tiempoFinal').textContent =
+        'Tu tiempo: ' + formatearTiempo(tiempoMs);
 
-      const lista = document.getElementById('listaFinal');
-      lista.innerHTML = '';
-      respondidas.forEach(texto => {
-        const li = document.createElement('li');
-        li.textContent = texto;
-        lista.appendChild(li);
-      });
+      try {
+        await fetch('/api/resultado', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nombre: nombre, tiempo_ms: tiempoMs })
+        });
+      } catch (e) {
+        console.error('No se pudo guardar el resultado', e);
+      }
+
+      try {
+        const resp = await fetch('/api/resultados');
+        const datos = await resp.json();
+        const ranking = document.getElementById('ranking');
+        ranking.innerHTML = '';
+        datos.forEach((r, idx) => {
+          const li = document.createElement('li');
+          if (idx === 0) li.classList.add('mejor');
+          li.innerHTML = '<span>' + (idx + 1) + '. ' + r.nombre + '</span><span>' + r.tiempo_texto + '</span>';
+          ranking.appendChild(li);
+        });
+      } catch (e) {
+        console.error('No se pudo obtener el ranking', e);
+      }
     }
   </script>
 </body>
@@ -312,7 +420,6 @@ class Pagina:
         self.preguntas = preguntas
 
     def render(self) -> bytes:
-        """Sustituye el placeholder por el JSON de las preguntas y devuelve el HTML en bytes."""
         preguntas_json = json.dumps(
             [asdict(p) for p in self.preguntas], ensure_ascii=False
         )
@@ -320,20 +427,53 @@ class Pagina:
         return html.encode("utf-8")
 
 
+# ---------- Handler / Servidor ----------
+
 class ForHandler(BaseHTTPRequestHandler):
-    """Maneja las peticiones HTTP entrantes."""
+    """Maneja las peticiones HTTP: página principal y API del ranking."""
 
     pagina = Pagina(PREGUNTAS)
 
     def do_GET(self):
-        if self.path != "/":
+        if self.path == "/":
+            self._responder_html(self.pagina.render())
+        elif self.path == "/api/resultados":
+            self._responder_json(
+                [asdict(r) for r in ranking_store.obtener_ordenados()]
+            )
+        else:
+            self.send_error(404, "No encontrado")
+
+    def do_POST(self):
+        if self.path != "/api/resultado":
             self.send_error(404, "No encontrado")
             return
 
-        contenido = self.pagina.render()
+        largo = int(self.headers.get("Content-Length", 0))
+        cuerpo = self.rfile.read(largo)
 
+        try:
+            datos = json.loads(cuerpo)
+            nombre = str(datos["nombre"])
+            tiempo_ms = int(datos["tiempo_ms"])
+        except (json.JSONDecodeError, KeyError, ValueError):
+            self.send_error(400, "JSON inválido")
+            return
+
+        ranking_store.agregar(nombre, tiempo_ms)
+        self._responder_json({"ok": True})
+
+    def _responder_html(self, contenido: bytes):
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(contenido)))
+        self.end_headers()
+        self.wfile.write(contenido)
+
+    def _responder_json(self, data):
+        contenido = json.dumps(data, ensure_ascii=False).encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(contenido)))
         self.end_headers()
         self.wfile.write(contenido)
