@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación de Temas Docentes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <span class="eyebrow">Sistema de evaluación asistido por IA</span>
+            <h1>Evaluación de Temas Docentes</h1>
+            <p class="subtitle">Calificación automática con Groq · Escala de Nivel 1 a Nivel 3</p>
+        </header>
+
+        <main>
+            <div class="card">
+                <div class="input-section">
+                    <label for="temaInput">Tema a evaluar</label>
+                    <input type="text" id="temaInput" placeholder="Ej: Aprendizaje Basado en Proyectos" autofocus>
+                    <button id="btnEvaluar" class="btn-evaluar">Evaluar tema</button>
+                </div>
+            </div>
+
+            <div id="resultado" class="resultado-container">
+                <!-- Los resultados se mostrarán aquí dinámicamente -->
+                <div class="placeholder">
+                    <p>Ingresa un tema y presiona <strong>Evaluar tema</strong> para obtener una calificación.</p>
+                    <p class="hint">El sistema analiza tres criterios: Recursos Educativos, Evaluación y Empoderamiento del Estudiante.</p>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h3>Criterios de calificación</h3>
+                <div class="info-grid">
+                    <div class="info-item nivel-1">
+                        <span class="nivel-tag">Nivel 1</span>
+                        <h4>Básico</h4>
+                        <p>Recursos limitados, evaluación poco clara, bajo empoderamiento.</p>
+                    </div>
+                    <div class="info-item nivel-2">
+                        <span class="nivel-tag">Nivel 2</span>
+                        <h4>Intermedio</h4>
+                        <p>Recursos adecuados, evaluación estructurada, cierto empoderamiento.</p>
+                    </div>
+                    <div class="info-item nivel-3">
+                        <span class="nivel-tag">Nivel 3</span>
+                        <h4>Excelente</h4>
+                        <p>Recursos diversos, evaluación completa, alto empoderamiento.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Sistema de Evaluación Docente · Go + Groq API</p>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
