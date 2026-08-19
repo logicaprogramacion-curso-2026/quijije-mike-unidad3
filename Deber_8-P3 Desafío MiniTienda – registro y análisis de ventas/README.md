@@ -51,7 +51,7 @@ git commit -m "MiniTienda: registro y analisis de ventas"
 git push
 ```
 
-## Autora
+## Autor
 Mike Quijije Chele
 
 ## Fecha
