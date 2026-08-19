@@ -1,3 +1,6 @@
-producto_id,producto,cantidad,precio_unitario,descuento,total,fecha
-3,Monitor Samsung,5,350.0,0.0,1750.0,2026-08-19 17:13:03
-4,Audífonos Sony,12,120.0,72.0,1368.0,2026-08-19 17:16:38
+Producto,Ingresos ($)
+Laptop Dell XPS,4800.0
+Monitor Samsung,1050.0
+Teclado Mecánico,629.3
+Mouse Logitech,364.0
+Audífonos Sony,240.0

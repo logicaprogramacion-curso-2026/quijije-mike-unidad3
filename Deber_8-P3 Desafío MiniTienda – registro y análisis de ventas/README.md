@@ -5,9 +5,9 @@ Sistema de consola para gestión de ventas con análisis de datos.
 
 ## Entregables (según la asignación)
 
-1. **`MiniTienda_Sheyla.ipynb`** — Archivo .ipynb con el código ejecutable y las celdas
+1. **`MiniTienda_Mike.ipynb`** — Archivo .ipynb con el código ejecutable y las celdas
    de prueba, para abrir en Google Colab o Jupyter.
-2. **`Evidencias_MiniTienda_Sheyla.pdf`** — Documento .pdf con evidencia del desarrollo
+2. **`Evidencias_MiniTienda_mike.pdf`** — Documento .pdf con evidencia del desarrollo
    realizado: capturas de la ejecución (entradas/salidas), explicación breve del
    algoritmo y las respuestas a las preguntas de la asignación.
 3. **`README.md`** — Este archivo, con los entregables descritos.
@@ -37,7 +37,7 @@ Sistema de consola para gestión de ventas con análisis de datos.
 
 ## Cómo ejecutarlo
 
-Abrir `MiniTienda_Sheyla.ipynb` en Google Colab o Jupyter y correr las celdas en orden.
+Abrir `MiniTienda_Mike.ipynb` en Google Colab o Jupyter y correr las celdas en orden.
 Las secciones 1 a 3 definen las estructuras y funciones; la sección 4 contiene celdas de
 prueba que simulan el uso del programa sin necesidad de escribir datos manualmente. Para
 usar el menú interactivo con `input()`, descomentar `menu()` al final de la sección 3.
@@ -52,7 +52,7 @@ git push
 ```
 
 ## Autora
-Sheyla Tumbaco Morán
+Mike Quijije Chele
 
 ## Fecha
 18/08/2026
