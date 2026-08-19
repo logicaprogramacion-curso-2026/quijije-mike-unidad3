@@ -199,7 +199,7 @@ def analizar_ventas():
             log_file.write(f"{datetime.now()} - ERROR ANALISIS: {e}\n")
         return None, None
 
-AUTOR_GRAFICO = "Sheyla Tumbaco Morán"
+AUTOR_GRAFICO = "Mike Quijije Chele"
 MATERIA_GRAFICO = "Arquitectura de Computadoras y Sistemas Operativos"
 
 
